@@ -1,29 +1,25 @@
-use std::i32;
+use std::{i32, io};
+use std::io::Read;
+use std::fmt::Display;
 
 fn main() {
-    println!("Hello, world!");
+    read_and_write(parse, calibration_sum);
 }
 
-pub fn most_calories(list: Vec<Vec<i32>>) -> i32 {
-    return list.iter()
-        .map(|elf| elf.iter().sum())
-        .max()
-        .unwrap_or_default();
+pub fn calibration_sum(calibration_values: Vec<i32>) -> i32 {
+    return calibration_values.iter().sum();
 }
 
-pub fn parse(input: &str) -> Vec<Vec<i32>>{
-    let mut elf : Vec<i32> = Vec::new();
-    let mut elves: Vec<Vec<i32>> = Vec::new();
+pub fn parse(input: &str) -> Vec<i32> {
+    let mut calibration_values : Vec<i32> = Vec::new();
     for line in input.lines() {
-        if !line.is_empty() {
-            elf.push(line.parse().unwrap());
-        } else {
-            elves.push(elf);
-            elf = Vec::new();
-        }
+        let first_number = line.chars().find(|x| x.is_numeric()).unwrap_or_default();
+        let last_number = line.chars().rev().find(|x| x.is_numeric()).unwrap_or_default();
+        
+        let calibration_value = String::from_iter([first_number,last_number].iter());
+        calibration_values.push(calibration_value.parse().unwrap());
     }
-    elves.push(elf);
-    return elves;
+    return calibration_values;
 }
 
 #[cfg(test)]
@@ -32,35 +28,32 @@ mod tests {
     use indoc::indoc;
 
     const INPUT: &str = indoc! {"
-    1000
-    2000
-    3000
-    
-    4000
-    
-    5000
-    6000
-    
-    7000
-    8000
-    9000
-    
-    10000
+    1abc2
+    pqr3stu8vwx
+    a1b2c3d4e5f
+    treb7uchet
     "};
 
     #[test]
     fn test_parse() {
-        let mut expected: Vec<Vec<i32>> = Vec::new();
-        expected.push([1000,2000,3000].to_vec());
-        expected.push([4000].to_vec());
-        expected.push([5000,6000].to_vec());
-        expected.push([7000,8000,9000].to_vec());
-        expected.push([10000].to_vec());
+        let expected = [12, 38, 15, 77 ];
         assert_eq!(parse(INPUT), expected);
     }
 
     #[test]
-    fn test_most_calories() {
-        assert_eq!(most_calories(parse(INPUT)), 24000);
+    fn test_calibration_sum() {
+        assert_eq!(calibration_sum(parse(INPUT)), 142);
     }
+}
+
+fn read_and_write<T, S: Display>(parse: fn(&str) -> T, compute: fn(T) -> S ) {
+    let mut input = String::new();
+
+    io::stdin()
+        .read_to_string(&mut input)
+        .expect("Failed to read input");
+
+
+    let result = compute(parse(&input));
+    println!("{}", result);
 }
