@@ -41,10 +41,9 @@ fn parse(input: &str) -> Vec<Game> {
         .lines()
         .map(|line| {
             let split: Vec<&str> = line.splitn(2, ": ").collect();
-            let id = split
+            let id: u32 = split
                 .first()
-                .and_then(|g| g.chars().last())
-                .and_then(|a| a.to_digit(10))
+                .and_then(|g| g.split_once(" ").and_then(|(_,r)|r.parse().ok()))
                 .unwrap();
             let draws = split.last().unwrap().split("; ").map(parse_draw).collect();
             Game {
@@ -84,6 +83,7 @@ mod tests {
     Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
     Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
     Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+    Game 21: 1 red, 1 blue, 1 green
     "};
 
     #[test]
@@ -121,6 +121,11 @@ mod tests {
             draws: vec![
                 Draw { red: 6, blue: 1, green: 3},
                 Draw { blue: 2, red: 1, green: 2},
+            ],
+        },Game {
+            id: 21,
+            draws: vec![
+                Draw { red: 1, blue: 1, green: 1},
             ],
         },
         ];
