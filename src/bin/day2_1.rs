@@ -2,14 +2,9 @@ use std::collections::HashMap;
 use std::collections::hash_map::RandomState;
 use std::fmt::Display;
 use std::io::Read;
-use std::{i32, io};
+use std::io;
 
 fn main() {
-    let matching_draw = Draw {
-        red: 12, 
-        green: 13,
-        blue: 14,
-    };
     read_and_write(parse, game_id_sum);
 }
 #[derive(Clone, PartialEq, Debug)]
@@ -63,15 +58,19 @@ fn parse(input: &str) -> Vec<Game> {
 fn parse_draw(input: &str) -> Draw {
     let props: HashMap<&str, &str, RandomState> = input.split(", ").map(|a| {
         let mut iter = a.splitn(2," ");
-        let r = iter.next().unwrap();
-        let l = iter.next().unwrap();
-        (l,r)
+        let amount = iter.next().unwrap();
+        let color = iter.next().unwrap();
+        (color,amount)
     }).collect();
     Draw {
-        red: props.get("red").map(|x| x.parse().unwrap_or_default()).unwrap_or_default(),
-        green: props.get("green").map(|x| x.parse().unwrap_or_default()).unwrap_or_default(),
-        blue: props.get("blue").map(|x| x.parse().unwrap_or_default()).unwrap_or_default(),
+        red: get_or_default(&props, "red"),
+        green: get_or_default(&props, "green"),
+        blue: get_or_default(&props, "blue"),
     }
+}
+
+fn get_or_default(props: &HashMap<&str, &str, RandomState>, key: &str) -> u32{
+    props.get(key).map(|x| x.parse().unwrap_or_default()).unwrap_or_default()
 }
 
 #[cfg(test)]
