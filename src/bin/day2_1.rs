@@ -5,6 +5,11 @@ use std::io::Read;
 use std::{i32, io};
 
 fn main() {
+    let matching_draw = Draw {
+        red: 12, 
+        green: 13,
+        blue: 14,
+    };
     read_and_write(parse, game_id_sum);
 }
 #[derive(Clone, PartialEq, Debug)]
@@ -21,7 +26,19 @@ struct Draw {
 }
 
 fn game_id_sum(games: Vec<Game>) -> u32 {
-    games.iter().map(|game| game.id).sum()
+    let matching_draw = Draw {
+        red: 12, 
+        green: 13,
+        blue: 14,
+    };
+    games.iter()
+        .filter(|g| {
+            g.draws.iter().all(|d| {
+                d.red <= matching_draw.red && d.green <= matching_draw.green && d.blue <= matching_draw.blue
+            })
+        })
+        .map(|game| game.id)
+        .sum()
 }
 
 fn parse(input: &str) -> Vec<Game> {
@@ -34,7 +51,7 @@ fn parse(input: &str) -> Vec<Game> {
                 .and_then(|g| g.chars().last())
                 .and_then(|a| a.to_digit(10))
                 .unwrap();
-            let draws = split.last().unwrap().split("; ").map(parseDraw).collect();
+            let draws = split.last().unwrap().split("; ").map(parse_draw).collect();
             Game {
                 id: id,
                 draws: draws,
@@ -43,7 +60,7 @@ fn parse(input: &str) -> Vec<Game> {
         .collect()
 }
 
-fn parseDraw(input: &str) -> Draw {
+fn parse_draw(input: &str) -> Draw {
     let props: HashMap<&str, &str, RandomState> = input.split(", ").map(|a| {
         let mut iter = a.splitn(2," ");
         let r = iter.next().unwrap();
@@ -114,6 +131,11 @@ mod tests {
     #[test]
     fn test_game_id_sum() {
         assert_eq!(game_id_sum(parse(INPUT)), 8);
+    }
+
+    #[test]
+    fn test_solve() {
+        assert!(game_id_sum(parse(INPUT)) > 202, "answer must be higher than 202");
     }
 }
 
