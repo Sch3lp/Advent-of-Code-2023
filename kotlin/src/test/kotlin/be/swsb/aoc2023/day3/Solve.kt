@@ -3,7 +3,7 @@ package be.swsb.aoc2023.day3
 import be.swsb.aoc2023.Point
 import be.swsb.aoc2023.readFile
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -20,8 +20,8 @@ class Solve {
 
     @Test
     fun `solve part 2`() {
-        solve2(readFile(exampleInput)) shouldBe 467835
-        solve2(readFile(actualInput)) shouldBeGreaterThan 49062287
+        solve2(readFile(exampleInput)) shouldBe 467835L
+        solve2(readFile(actualInput)) shouldBeGreaterThan 49062287L
     }
 
     @Test
@@ -62,7 +62,7 @@ private fun String.parse() =
     }.toMap())
 
 typealias Gear = Pair<Point, Set<Int>>
-val Gear.ratio get() = this.second.reduce(Int::times)
+val Gear.ratio get() = this.second.map { it.toLong() }.reduce(Long::times)
 
 class Schematic(private val points: Map<Point, Char>) {
 
@@ -71,7 +71,7 @@ class Schematic(private val points: Map<Point, Char>) {
         val allAsterisks = points.filterValues { it == '*' }.keys
         return allAsterisks.map { asterisk ->
             asterisk to numbersNextToAsterisks.filterValues { points -> points.any { point -> point in asterisk.neighbours } }.keys
-        }.filter { (_,numbers) -> numbers.size >= 2 }
+        }.filter { (_,numbers) -> numbers.size == 2 }
     }
 
     fun allNumbersAdjacentToSymbol(symbol: Char? = null): List<Pair<Int, List<Point>>> =
