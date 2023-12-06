@@ -1,6 +1,8 @@
 package be.swsb.aoc2023
 
-import org.assertj.core.api.Assertions.assertThat
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class PointTest {
@@ -12,7 +14,7 @@ class PointTest {
 
         val actual = origin + vector
 
-        assertThat(actual).isEqualTo(Point(-1, 1))
+        actual shouldBe Point(-1, 1)
     }
 
     @Test
@@ -21,7 +23,7 @@ class PointTest {
 
         val actual = point.neighbours
 
-        assertThat(actual).containsExactlyInAnyOrder(
+        actual.shouldContainExactlyInAnyOrder(
             Point(-1, -1), Point(0, -1), Point(1, -1),
             Point(-1, 0), Point(1, 0),
             Point(-1, 1), Point(0, 1), Point(1, 1)
@@ -34,7 +36,7 @@ class PointTest {
 
         val actual = point.orthogonalNeighbours
 
-        assertThat(actual).containsExactlyInAnyOrder(
+        actual.shouldContainExactlyInAnyOrder(
             Point(0, -1),
             Point(-1, 0), Point(1, 0),
             Point(0, 1)
@@ -43,30 +45,30 @@ class PointTest {
 
     @Test
     fun `rangeTo retains expected order`() {
-        assertThat(Point(0, 0)..Point(0, 3)).containsExactly(Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3))
-        assertThat(Point(0, 3)..Point(0, 0)).containsExactly(Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0))
-        assertThat(Point(0, 0)..Point(3, 0)).containsExactly(Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0))
-        assertThat(Point(3, 0)..Point(0, 0)).containsExactly(Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0))
+        (Point(0, 0)..Point(0, 3)).shouldContainExactly(Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3))
+        (Point(0, 3)..Point(0, 0)).shouldContainExactly(Point(0, 3), Point(0, 2), Point(0, 1), Point(0, 0))
+        (Point(0, 0)..Point(3, 0)).shouldContainExactly(Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0))
+        (Point(3, 0)..Point(0, 0)).shouldContainExactly(Point(3, 0), Point(2, 0), Point(1, 0), Point(0, 0))
     }
 
     @Test
     fun `rangeTo diagonally just goes diagonally (no manhattan)`() {
-        assertThat(Point(0, 0)..Point(1, 2)).containsExactly(Point(0, 0), Point(1, 1), Point(1, 2))
-        assertThat(Point(0, 0)..Point(2, 1)).containsExactly(Point(0, 0), Point(1, 1), Point(2, 1))
+        (Point(0, 0)..Point(1, 2)).shouldContainExactly(Point(0, 0), Point(1, 1), Point(1, 2))
+        (Point(0, 0)..Point(2, 1)).shouldContainExactly(Point(0, 0), Point(1, 1), Point(2, 1))
 
-        assertThat(Point(2, 1)..Point(0, 0)).containsExactly(Point(2, 1), Point(1, 0), Point(0, 0))
-        assertThat(Point(1, 2)..Point(0, 0)).containsExactly(Point(1, 2), Point(0, 1), Point(0, 0))
+        (Point(2, 1)..Point(0, 0)).shouldContainExactly(Point(2, 1), Point(1, 0), Point(0, 0))
+        (Point(1, 2)..Point(0, 0)).shouldContainExactly(Point(1, 2), Point(0, 1), Point(0, 0))
 
-        assertThat(Point(0, 0)..Point(-1, -2)).containsExactly(Point(0, 0), Point(-1, -1), Point(-1, -2))
-        assertThat(Point(0, 0)..Point(-2, -1)).containsExactly(Point(0, 0), Point(-1, -1), Point(-2, -1))
+        (Point(0, 0)..Point(-1, -2)).shouldContainExactly(Point(0, 0), Point(-1, -1), Point(-1, -2))
+        (Point(0, 0)..Point(-2, -1)).shouldContainExactly(Point(0, 0), Point(-1, -1), Point(-2, -1))
 
-        assertThat(Point(-1, -2)..Point(0, 0)).containsExactly(Point(-1, -2), Point(0, -1), Point(0, 0))
-        assertThat(Point(-2, -1)..Point(0, 0)).containsExactly(Point(-2, -1), Point(-1, 0), Point(0, 0))
+        (Point(-1, -2)..Point(0, 0)).shouldContainExactly(Point(-1, -2), Point(0, -1), Point(0, 0))
+        (Point(-2, -1)..Point(0, 0)).shouldContainExactly(Point(-2, -1), Point(-1, 0), Point(0, 0))
 
-        assertThat(Point(0, 0)..Point(1, -2)).containsExactly(Point(0, 0), Point(1, -1), Point(1, -2))
-        assertThat(Point(0, 0)..Point(-2, 1)).containsExactly(Point(0, 0), Point(-1, 1), Point(-2, 1))
+        (Point(0, 0)..Point(1, -2)).shouldContainExactly(Point(0, 0), Point(1, -1), Point(1, -2))
+        (Point(0, 0)..Point(-2, 1)).shouldContainExactly(Point(0, 0), Point(-1, 1), Point(-2, 1))
 
-        assertThat(Point(1, -2)..Point(0, 0)).containsExactly(Point(1, -2), Point(0, -1), Point(0, 0))
-        assertThat(Point(-2, 1)..Point(0, 0)).containsExactly(Point(-2, 1), Point(-1,  0), Point(0, 0))
+        (Point(1, -2)..Point(0, 0)).shouldContainExactly(Point(1, -2), Point(0, -1), Point(0, 0))
+        (Point(-2, 1)..Point(0, 0)).shouldContainExactly(Point(-2, 1), Point(-1,  0), Point(0, 0))
     }
 }

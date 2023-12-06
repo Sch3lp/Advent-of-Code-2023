@@ -9,6 +9,8 @@ repositories {
     mavenCentral()
 }
 
+val kotestVersion = "5.8.0"
+
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3"))
@@ -20,7 +22,8 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
-    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
 }
 
 tasks.test {
