@@ -13,11 +13,15 @@ fn calibration_sum(calibration_values: Vec<i32>) -> i32 {
 }
 
 fn parse(input: &str) -> Vec<i32> {
-    input
+    let cals = input
         .lines()
         .map(|line| find_calibration_value(line))
         .map(|x| x.parse().unwrap())
-        .collect()
+        .collect();
+    for cal in &cals {
+        println!("{}", cal);
+    }
+    return cals;
 }
 
 fn find_calibration_value(line: &str) -> String {
@@ -44,13 +48,19 @@ fn find_calibration_value(line: &str) -> String {
         ("0", 0),
     ]);
 
-    let mut matched_indexes: Vec<(usize, i32)> = digits
+    let first_number = digits
         .keys()
         .filter_map(|k| line.find(k).map(|idx| (idx, digits[k])))
-        .collect();
-    matched_indexes.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
-    let first_number = matched_indexes.first().unwrap().1;
-    let last_number = matched_indexes.last().unwrap().1;
+        .min_by_key(|x| x.0)
+        .unwrap()
+        .1;
+
+    let last_number = digits
+        .keys()
+        .filter_map(|k| line.rfind(k).map(|idx| (idx, digits[k])))
+        .max_by_key(|x| x.0)
+        .unwrap()
+        .1;
     format!("{}{}", first_number, last_number)
 }
 
@@ -67,11 +77,12 @@ mod tests {
     4nineeightseven2
     zoneight234
     7pqrstsixteen
+    78seven8
     "};
 
     #[test]
     fn test_parse() {
-        let expected = [29, 83, 13, 24, 42, 14, 76];
+        let expected = [29, 83, 13, 24, 42, 14, 76, 78];
         assert_eq!(parse(INPUT), expected);
     }
 
@@ -82,7 +93,10 @@ mod tests {
 
     #[test]
     fn test_solve2() {
-        assert!(calibration_sum(parse(INPUT)) > 54196, "solution must be larger than 54196");
+        assert!(
+            calibration_sum(parse(INPUT)) > 54196,
+            "solution must be larger than 54196"
+        );
     }
 }
 
