@@ -54,6 +54,10 @@ data class Point(val x: Int, val y: Int) {
         else if (this.y == other.y) Point((other.x - this.x).sign, 0)
         else Point((other.x - this.x).sign, (other.y - this.y).sign)
     }
+
+    fun searchRight(pointPredicate: (Point) -> Boolean) : Point? =
+        if (pointPredicate(this + Point(1,0))) { this + Point(1,0) }
+        else null
 }
 
 /** Least common multiple **/
