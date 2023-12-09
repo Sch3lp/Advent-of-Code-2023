@@ -21,7 +21,21 @@ class Solve {
     fun `solve - part 1 - actual`() {
         val sequences: List<List<Long>> = parse(readFile(actualInput))
         val actual = sequences.sumOf { sequence -> predict(sequence) }
-        actual shouldBeEqual 0
+        actual shouldBeEqual 1757008019
+    }
+
+    @Test
+    fun `solve - part 2 - example input`() {
+        val sequences: List<List<Long>> = parse(readFile(exampleInput))
+        val actual = sequences.sumOf { sequence -> predict(sequence, true) }
+        actual shouldBeEqual 2
+    }
+
+    @Test
+    fun `solve - part 2 - actual`() {
+        val sequences: List<List<Long>> = parse(readFile(actualInput))
+        val actual = sequences.sumOf { sequence -> predict(sequence, true) }
+        actual shouldBeEqual 995
     }
 
     @Test
@@ -37,14 +51,35 @@ class Solve {
         predict(listOf(1L, 3L, 6L, 10L, 15L, 21L)) shouldBeEqual 28L
         predict(listOf(10L, 13L, 16L, 21L, 30L, 45L)) shouldBeEqual 68L
     }
+
+    @Test
+    fun `predictBackwards - uses generated sequences to predict next value backwards`() {
+        predict(listOf(0L, 3L, 6L, 9L, 12L, 15L), true) shouldBeEqual -3L
+        predict(listOf(1L, 3L, 6L, 10L, 15L, 21L), true) shouldBeEqual 0L
+        predict(listOf(10L, 13L, 16L, 21L, 30L, 45L), true) shouldBeEqual 5L
+    }
 }
 
 fun generateNextSequenceFrom(sequence: List<Long>): List<Long> =
     sequence.zipWithNext().fold(listOf()) { acc, (m1, m2) -> acc + (m2 - m1) }
 
-fun predict(sequence: List<Long>): Long {
+fun predict(sequence: List<Long>, backwards : Boolean = false): Long {
+    return if(backwards) predictBackwards(sequence) else predictForwards(sequence)
+}
+
+private fun predictForwards(sequence: List<Long>): Long {
     val lastMeasurements = mutableListOf(sequence.last())
     var curSequence = sequence
+    while (!curSequence.all { it == 0L }) {
+        curSequence = generateNextSequenceFrom(curSequence)
+        lastMeasurements += curSequence.last()
+    }
+    return lastMeasurements.sum()
+}
+
+private fun predictBackwards(sequence: List<Long>): Long {
+    val lastMeasurements = mutableListOf(sequence.reversed().last())
+    var curSequence = sequence.reversed()
     while (!curSequence.all { it == 0L }) {
         curSequence = generateNextSequenceFrom(curSequence)
         lastMeasurements += curSequence.last()
