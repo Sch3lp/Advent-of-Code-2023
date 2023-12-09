@@ -8,7 +8,7 @@ class Solve {
     private val exampleInput = "2023/day9/exampleInput.txt"
     private val actualInput = "2023/day9/input.txt"
 
-    fun parse(input: String) = input.lines().map { line -> line.split(" ").map { it.toLong() } }
+    private fun parse(input: String) = input.lines().map { line -> line.split(" ").map { it.toLong() } }
 
     @Test
     fun `solve - part 1 - example input`() {
@@ -60,29 +60,3 @@ class Solve {
     }
 }
 
-fun generateNextSequenceFrom(sequence: List<Long>): List<Long> =
-    sequence.zipWithNext().fold(listOf()) { acc, (m1, m2) -> acc + (m2 - m1) }
-
-fun predict(sequence: List<Long>, backwards : Boolean = false): Long {
-    return if(backwards) predictBackwards(sequence) else predictForwards(sequence)
-}
-
-private fun predictForwards(sequence: List<Long>): Long {
-    val lastMeasurements = mutableListOf(sequence.last())
-    var curSequence = sequence
-    while (!curSequence.all { it == 0L }) {
-        curSequence = generateNextSequenceFrom(curSequence)
-        lastMeasurements += curSequence.last()
-    }
-    return lastMeasurements.sum()
-}
-
-private fun predictBackwards(sequence: List<Long>): Long {
-    val lastMeasurements = mutableListOf(sequence.reversed().last())
-    var curSequence = sequence.reversed()
-    while (!curSequence.all { it == 0L }) {
-        curSequence = generateNextSequenceFrom(curSequence)
-        lastMeasurements += curSequence.last()
-    }
-    return lastMeasurements.sum()
-}
