@@ -2,12 +2,19 @@ package be.swsb.aoc2023.day10
 
 import be.swsb.aoc2023.Debugging.debug
 import be.swsb.aoc2023.Point
+import be.swsb.aoc2023.Point.Companion.at
 
-fun solve1(input:String) = PipeMap.fromString(input).countSegments() / 2
-data class PipeMap(private val points: Map<Point, TilePoint>) : Map<Point, TilePoint> by points {
+fun solve1(input: String) = PipeMap.fromString(input).countSegments() / 2
+fun solve2(input: String) = PipeMap.fromString(input).enhance().containedPoints().size
+
+data class PipeMap(private val points: Map<Point, TilePoint>) {
     private val startingPoint = points.values.first { tilePoint -> tilePoint.tile == Start }
+    private val maxX = points.keys.maxBy { it.x }.x
+    private val maxY = points.keys.maxBy { it.y }.y
 
-    fun countSegments(): Int {
+    fun countSegments(): Int = pipelinePoints.size
+
+    private val pipelinePoints by lazy {
         val segments = mutableSetOf(startingPoint)
         var (previousSegment, currentSegment) = startingPoint to findStartPipeOptions(startingPoint).first
         while (currentSegment != startingPoint) {
@@ -18,7 +25,7 @@ data class PipeMap(private val points: Map<Point, TilePoint>) : Map<Point, TileP
             previousSegment = prev
             currentSegment = cur
         }
-        return segments.size
+        segments.map { it.point }.toSet()
     }
 
     private fun findStartPipeOptions(startPoint: TilePoint): Pair<TilePoint, TilePoint> {
@@ -35,6 +42,33 @@ data class PipeMap(private val points: Map<Point, TilePoint>) : Map<Point, TileP
     }
 
     private fun TilePoint.keepIfInOrNull(vararg tiles: Tile) = if (tile in tiles) this else null
+
+    fun enhance(): PipeMap =
+        copy(points = points.mapValues { (k, v) ->
+            if (k in pipelinePoints) v
+            else TilePoint(k, Ground)
+        })
+
+    fun containedPoints(): Set<Point> =
+        (-1..maxY+1).flatMap { y ->
+            (-1..maxX+1).map { x -> at(x, y) }.windowed(3).fold(TraceAccumulator()) { acc, points ->
+                val left = points.getOrNull(0)
+                val tracePoint = points.getOrNull(1)
+                val right = points.getOrNull(2)
+                val (intersections, containedPoints) = acc
+                debug { "checking for intersection at $tracePoint" }
+                val newIntersections = if (left !in pipelinePoints && tracePoint in pipelinePoints && right !in pipelinePoints) intersections + tracePoint else intersections
+                val newContainedPoints = if (newIntersections.size % 2 == 1) containedPoints + tracePoint else containedPoints
+                debug { "intersections up until now: $newIntersections" }
+                debug { "containedPoints up until now: ${newContainedPoints - pipelinePoints}" }
+                TraceAccumulator(newIntersections.filterNotNull().toSet(), newContainedPoints.filterNotNull().toSet())
+            }.containedPoints - pipelinePoints
+        }.toSet()
+
+    private data class TraceAccumulator(
+        val intersections: Set<Point> = emptySet(),
+        val containedPoints: Set<Point> = emptySet()
+    )
 
     companion object {
         fun fromString(input: String) = PipeMap(

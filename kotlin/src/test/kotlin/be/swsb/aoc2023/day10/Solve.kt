@@ -55,6 +55,110 @@ class Solve {
     }
 
     @Test
+    fun `part 2 - anything but the pipe loop can be considered Ground`() {
+        val part2Input = """
+            ...........
+            .S-------7.
+            .|F-----7|.
+            .||.|7J.||.
+            .||..|L7||.
+            .|L-7.F-J|.
+            .|..|.|..|.
+            .L--J.L--J.
+            ...........
+        """.trimIndent()
+
+        val enhancedPart2Input = """
+            ...........
+            .S-------7.
+            .|F-----7|.
+            .||.....||.
+            .||.....||.
+            .|L-7.F-J|.
+            .|..|.|..|.
+            .L--J.L--J.
+            ...........
+        """.trimIndent()
+
+        val originalMap = PipeMap.fromString(part2Input)
+        originalMap.enhance() shouldBeEqual PipeMap.fromString(enhancedPart2Input)
+    }
+
+    @Test
+    fun `part 2 - find contained tiles - first example`() {
+        PipeMap.fromString(
+            """
+                ...........
+                .S-------7.
+                .|F-----7|.
+                .||.....||.
+                .||.....||.
+                .|L-7.F-J|.
+                .|..|.|..|.
+                .L--J.L--J.
+                ...........
+            """.trimIndent()
+        ).enhance().containedPoints() shouldBeEqual setOf(at(2, 6), at(3, 6), at(7, 6), at(8, 6))
+
+    }
+
+    @Test
+    fun `find contained - pipeline on edge of diagram`() {
+        PipeMap.fromString("""
+            |JJJJ|
+            |S--7|
+            ||..||
+            |L--J|
+            |LLLL|
+        """.trimIndent()).enhance().containedPoints() shouldBeEqual setOf(at(2,2),at(3,2))
+        PipeMap.fromString("""
+            S--7
+            |..|
+            L--J
+        """.trimIndent()).enhance().containedPoints() shouldBeEqual setOf(at(1,1),at(2,1))
+    }
+
+    @Test
+    fun `part 2 - find contained tiles - second example`() {
+        withDebugging {
+            PipeMap.fromString(
+                """
+                    .F----7F7F7F7F-7....
+                    .|F--7||||||||FJ....
+                    .||.FJ||||||||L7....
+                    FJL7L7LJLJ||LJ.L-7..
+                    L--J.L7...LJS7F-7L7.
+                    ....F-J..F7FJ|L7L7L7
+                    ....L7.F7||L7|.L7L7|
+                    .....|FJLJ|FJ|F7|.LJ
+                    ....FJL-7.||.||||...
+                    ....L---J.LJ.LJLJ...
+                """.trimIndent()
+            ).enhance().containedPoints().size shouldBeEqual 8
+        }
+    }
+
+    @Test
+    fun `part 2 - find contained tiles - last example`() {
+        withDebugging {
+            PipeMap.fromString(
+                """
+                    FF7FSF7F7F7F7F7F---7
+                    L|LJ||||||||||||F--J
+                    FL-7LJLJ||||||LJL-77
+                    F--JF--7||LJLJ7F7FJ-
+                    L---JF-JLJ.||-FJLJJ7
+                    |F|F-JF---7F7-L7L|7|
+                    |FFJF7L7F-JF7|JL---7
+                    7-L-JL7||F7|L7F-7F7|
+                    L.L7LFJ|||||FJL7||LJ
+                    L7JLJL-JLJLJL--JLJ.L
+                """.trimIndent()
+            ).enhance().containedPoints().size shouldBeEqual 10
+        }
+    }
+
+    @Test
     fun `solve part 1 - example`() {
         solve1(readFile(exampleInput)) shouldBeEqual 8
     }
@@ -62,5 +166,10 @@ class Solve {
     @Test
     fun `solve part 1 - actual`() {
         solve1(readFile(actualInput)) shouldBeEqual 6828
+    }
+
+    @Test
+    fun `solve part 2 - actual`() {
+        solve2(readFile(actualInput)) shouldBeEqual 0
     }
 }
