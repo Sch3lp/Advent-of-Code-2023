@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test
 
 class Solve {
 
-    private val exampleInput = "day3/exampleInput.txt"
-    private val actualInput = "day3/input.txt"
+    private val exampleInput = "2023/day3/exampleInput.txt"
+    private val actualInput = "2023/day3/input.txt"
 
     @Test
     fun `solve part 1`() {

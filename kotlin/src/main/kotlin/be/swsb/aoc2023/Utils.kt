@@ -58,6 +58,10 @@ data class Point(val x: Int, val y: Int) {
     fun searchRight(pointPredicate: (Point) -> Boolean) : Point? =
         if (pointPredicate(this + Point(1,0))) { this + Point(1,0) }
         else null
+
+    companion object {
+        fun at(x:Int, y: Int) = Point(x,y)
+    }
 }
 
 /** Least common multiple **/
@@ -79,7 +83,7 @@ infix fun Long.safeTimes(other: Long) = (this * other).also {
 
 object Debugging {
     private var debugEnabled = false
-    fun <T> T.debug(block: (it: T) -> String?) = if (debugEnabled) this.also { block(this)?.let { println("$it") } } else this
+    fun <T> T.debug(block: (it: T) -> String?) = if (debugEnabled) this.also { block(this)?.let { println(it) } } else this
     fun enable() {
         debugEnabled = true
     }
