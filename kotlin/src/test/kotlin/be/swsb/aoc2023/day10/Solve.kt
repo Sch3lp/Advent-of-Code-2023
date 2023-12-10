@@ -46,6 +46,15 @@ class Solve {
     }
 
     @Test
+    fun `following L from (1,3) after (1,2) should lead to (2,3)`() {
+        val prev = TilePoint(at(1, 2), Tile.of('|'))
+        val cur = TilePoint(at(1, 3), Tile.of('L'))
+        val (_, actual) = cur.follow(prev)
+
+        actual shouldBeEqual at(2, 3)
+    }
+
+    @Test
     fun `solve part 1 - example`() {
         solve1(readFile(exampleInput)) shouldBeEqual 8
     }
@@ -53,14 +62,5 @@ class Solve {
     @Test
     fun `solve part 1 - actual`() {
         solve1(readFile(actualInput)) shouldBeEqual 6828
-    }
-
-    @Test
-    fun `following L from (1,3) after (1,2) should lead to (2,2)`() {
-        val prev = TilePoint(at(1, 2), Tile.of('|'))
-        val cur = TilePoint(at(1, 3), Tile.of('L'))
-        val (_, actual) = cur.follow(prev)
-
-        actual shouldBeEqual at(2, 3)
     }
 }
