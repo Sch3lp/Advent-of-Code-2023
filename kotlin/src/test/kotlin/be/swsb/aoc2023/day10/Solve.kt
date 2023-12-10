@@ -119,6 +119,19 @@ class Solve {
     }
 
     @Test
+    fun `find contained - pipeline with bends to contain`() {
+        withDebugging {
+        PipeMap.fromString("""
+            |JJJJ|
+            |S--7|
+            |L7.||
+            |.L-J|
+            |LLLL|
+        """.trimIndent()).enhance().containedPoints() shouldBeEqual setOf(at(3,2))
+        }
+    }
+
+    @Test
     fun `part 2 - find contained tiles - second example`() {
         withDebugging {
             PipeMap.fromString(

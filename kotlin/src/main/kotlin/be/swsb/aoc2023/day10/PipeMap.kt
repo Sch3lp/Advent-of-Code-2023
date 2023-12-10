@@ -18,7 +18,6 @@ data class PipeMap(private val points: Map<Point, TilePoint>) {
         val segments = mutableSetOf(startingPoint)
         var (previousSegment, currentSegment) = startingPoint to findStartPipeOptions(startingPoint).first
         while (currentSegment != startingPoint) {
-            debug { "${currentSegment.tile.icon}" }
             segments.add(currentSegment)
             val (prev, cur) = currentSegment.follow(previousSegment)
                 .let { (prev, nextPoint) -> prev to points.getValue(nextPoint) }
@@ -50,15 +49,17 @@ data class PipeMap(private val points: Map<Point, TilePoint>) {
         })
 
     fun containedPoints(): Set<Point> =
-        (-1..maxY+1).flatMap { y ->
-            (-1..maxX+1).map { x -> at(x, y) }.windowed(3).fold(TraceAccumulator()) { acc, points ->
+        (-1..maxY + 1).flatMap { y ->
+            (-1..maxX + 1).map { x -> at(x, y) }.windowed(3).fold(TraceAccumulator()) { acc, points ->
                 val left = points.getOrNull(0)
                 val tracePoint = points.getOrNull(1)
                 val right = points.getOrNull(2)
                 val (intersections, containedPoints) = acc
                 debug { "checking for intersection at $tracePoint" }
-                val newIntersections = if (left !in pipelinePoints && tracePoint in pipelinePoints && right !in pipelinePoints) intersections + tracePoint else intersections
-                val newContainedPoints = if (newIntersections.size % 2 == 1) containedPoints + tracePoint else containedPoints
+                val newIntersections =
+                    if (left !in pipelinePoints && tracePoint in pipelinePoints && right !in pipelinePoints) intersections + tracePoint else intersections
+                val newContainedPoints =
+                    if (newIntersections.size % 2 == 1) containedPoints + tracePoint else containedPoints
                 debug { "intersections up until now: $newIntersections" }
                 debug { "containedPoints up until now: ${newContainedPoints - pipelinePoints}" }
                 TraceAccumulator(newIntersections.filterNotNull().toSet(), newContainedPoints.filterNotNull().toSet())
